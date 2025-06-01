@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jerome G. Cempron - Professional Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #333333;
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4A5568;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+        .timeline-item-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        .timeline-item-content.open {
+            max-height: 500px; /* Sufficiently large to accommodate content */
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .profile-picture-container {
+            width: 175px;
+            height: 175px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 5px solid white;
+            background: linear-gradient(45deg, #e2e8f0, #cbd5e0); /* Subtle gradient for placeholder */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem; /* Larger for 'JC' */
+            color: #718096; /* Softer color for placeholder */
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite alternate; /* Subtle animation */
+        }
+        .profile-picture {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Typing effect for roles */
+        .typing-text {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: .15em solid #4A5568;
+            animation: blink-caret .75s step-end infinite; /* Only blink-caret here, typing controlled by JS */
+        }
+
+        /* The typing animation controlled by JS */
+        /* No @keyframes typing here, as it's handled by JS */
+
+        /* The typewriter cursor effect */
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #4A5568; }
+        }
+
+        /* Pulse animation for placeholder */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        /* Hover effects for cards */
+        .card-hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Section fade-in animation */
+        .section-hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero section gradient background */
+        #home {
+            background: linear-gradient(to bottom right, #f8f7f4, #e2e8f0);
+        }
+    </style>
+</head>
+<body class="bg-[#f8f7f4] text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold text-[#4A5568]">Jerome G. Cempron</a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="nav-link text-gray-600 hover:text-[#4A5568]">Home</a>
+                <a href="#experience" class="nav-link text-gray-600 hover:text-[#4A5568]">Experience</a>
+                <a href="#skills" class="nav-link text-gray-600 hover:text-[#4A5568]">Skills</a>
+                <a href="#education" class="nav-link text-gray-600 hover:text-[#4A5568]">Education</a>
+                <a href="#training" class="nav-link text-gray-600 hover:text-[#4A5568]">Training</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-[#4A5568]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#home" class="block text-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Home</a>
+            <a href="#experience" class="block text-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Experience</a>
+            <a href="#skills" class="block text-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Skills</a>
+            <a href="#education" class="block text-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Education</a>
+            <a href="#training" class="block text-center py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">Training</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+
+        <section id="home" class="min-h-[80vh] flex items-center py-20">
+            <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="text-center md:text-left">
+                    <h1 class="text-4xl md:text-6xl font-bold text-[#4A5568] leading-tight">Jerome G. Cempron</h1>
+                    <p class="mt-4 text-lg md:text-xl text-gray-600 typing-text" id="roles-typing-text"></p>
+                    <p class="mt-6 text-gray-700 max-w-xl mx-auto md:mx-0">
+                        Highly adaptable and results-driven professional with 9 years of experience in fostering growth and achieving objectives within dynamic environments. Proven ability to communicate complex information clearly, manage diverse projects, and build strong relationships with stakeholders. Eager to learn and ready to deliver impactful solutions for your team.
+                    </p>
+                    <div class="mt-8 flex justify-center md:justify-start space-x-4">
+                         <a href="mailto:jeromecempron1994@gmail.com" class="bg-[#4A5568] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-[#3E4C5E] transition-transform transform hover:scale-105">Contact Me</a>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <div class="profile-picture-container">
+                        <img src="https://i.imgur.com/mA8xFcM.jpeg" alt="Jerome Cempron Profile" class="profile-picture">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="py-20 section-hidden">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#4A5568]">Professional Journey</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">This section outlines my career progression, showcasing my ability to adapt and grow in various roles. Click on any position to see how my responsibilities have evolved and how my skills can translate to your needs. This interactive timeline highlights my experience in project management, stakeholder communication, and strategic implementation.</p>
+            <div id="timeline-container" class="relative max-w-3xl mx-auto">
+                <div class="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-gray-300"></div>
+            </div>
+        </section>
+
+        <section id="skills" class="py-20 bg-white rounded-2xl shadow-lg section-hidden">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#4A5568]">My Skillset</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">A great project requires a diverse set of skills. This section breaks down my capabilities into core competencies and technical proficiencies. The chart below provides a clear, data-driven look at my technical skills, while the cards highlight the professional attributes I bring to every project.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-center mb-6 text-gray-700">Technical Skills</h3>
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-center mb-6 text-gray-700">Core Competencies</h3>
+                    <div id="competencies-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="py-20 section-hidden">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#4A5568]">Education & Credentials</h2>
+             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">My commitment to learning is foundational to my professional life. Here you can see my academic background and professional licensure, which provide the theoretical and practical knowledge underpinning my skills.</p>
+            <div id="education-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            </div>
+        </section>
+
+        <section id="training" class="py-20 section-hidden">
+            <h2 class="text-3xl font-bold text-center mb-4 text-[#4A5568]">Professional Development</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">I am a firm believer in lifelong learning. This section catalogs the various trainings and seminars I have attended to continuously sharpen my skills and stay current with industry best practices. These programs have been crucial in developing my expertise in instruction, technology, and leadership.</p>
+            <div id="training-container" class="space-y-4 max-w-4xl mx-auto">
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 Jerome G. Cempron. All Rights Reserved.</p>
+            <p class="mt-2">Built with passion and a desire to create.</p>
+            <div class="mt-4">
+                 <a href="mailto:jeromecempron1994@gmail.com" class="text-gray-400 hover:text-white">jeromecempron1994@gmail.com</a>
+                 <span class="mx-2 text-gray-500">|</span>
+                 <span class="text-400">09952206956</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('#mobile-menu a, .nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Typing effect for roles
+            const roles = ["Educator", "Project Coordinator", "Content Designer", "Client Success Advocate"];
+            let roleIndex = 0;
+            let charIndex = 0;
+            const typingTextElement = document.getElementById('roles-typing-text');
+            const typingSpeed = 100; // milliseconds per character
+            const eraseSpeed = 50; // milliseconds per character
+            const newRoleDelay = 1500; // milliseconds before typing new role
+
+            function typeRole() {
+                if (charIndex < roles[roleIndex].length) {
+                    typingTextElement.textContent += roles[roleIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeRole, typingSpeed);
+                } else {
+                    setTimeout(eraseRole, newRoleDelay);
+                }
+            }
+
+            function eraseRole() {
+                if (charIndex > 0) {
+                    typingTextElement.textContent = roles[roleIndex].substring(0, charIndex - 1);
+                    charIndex--;
+                    setTimeout(eraseRole, eraseSpeed);
+                } else {
+                    roleIndex = (roleIndex + 1) % roles.length;
+                    setTimeout(typeRole, typingSpeed);
+                }
+            }
+
+            typeRole(); // Start the typing animation
+
+
+            const workExperience = [
+                {
+                    title: "TEACHER III",
+                    company: "DEPARTMENT OF EDUCATION",
+                    dates: "Jan 2024 – PRESENT",
+                    details: [
+                        "Managed and delivered complex curriculum objectives, ensuring comprehensive understanding and measurable progress for diverse groups.",
+                        "Implemented continuous professional development strategies to stay current with best practices and adapt to evolving educational standards.",
+                        "Fostered a collaborative and productive environment, effectively engaging stakeholders to achieve shared goals."
+                    ]
+                },
+                {
+                    title: "TEACHER - II",
+                    company: "DEPARTMENT OF EDUCATION",
+                    dates: "Jul 2022 – Jan 2024",
+                    details: [
+                        "Designed and executed engaging instructional programs, tailoring content to meet specific learning objectives and client needs.",
+                        "Conducted thorough assessments and data analysis to monitor progress, identify areas for improvement, and inform strategic adjustments.",
+                        "Collaborated cross-functionally with teams to develop and enhance educational programs, demonstrating strong teamwork and project coordination."
+                    ]
+                },
+                {
+                    title: "TEACHER-I (Multiple Roles)",
+                    company: "DEPARTMENT OF EDUCATION",
+                    dates: "Sep 2017 – Jul 2022",
+                    details: [
+                        "Provided foundational support and guidance, ensuring clear understanding of core concepts for new learners.",
+                        "Managed and delivered instruction across various subject areas, demonstrating adaptability and expertise in diverse content.",
+                        "Developed and refined training materials and project plans, ensuring clarity and effectiveness of delivery.",
+                        "Monitored performance metrics and adjusted strategies to optimize outcomes and achieve targets."
+                    ]
+                },
+                 {
+                    title: "ENGLISH TEACHER",
+                    company: "RAINBOW OF ANGELS LEARNING CENTER",
+                    dates: "Jun 2015 – Mar 2017",
+                    details: [
+                        "Delivered core content and facilitated skill development for a diverse client base.",
+                        "Supported client development and academic growth, contributing to positive outcomes."
+                    ]
+                }
+            ];
+
+            const timelineContainer = document.getElementById('timeline-container');
+            workExperience.forEach((job, index) => {
+                const alignment = index % 2 === 0 ? 'md:ml-auto md:pl-16' : 'md:mr-auto md:pr-16';
+                const dotAlignment = index % 2 === 0 ? 'left-1/2' : 'left-1/2 md:-translate-x-full';
+                const itemHTML = `
+                    <div class="relative w-full md:w-1/2 mb-8 ${alignment}">
+                        <div class="absolute ${dotAlignment} -translate-x-1/2 mt-1.5 w-4 h-4 bg-[#4A5568] rounded-full border-4 border-white"></div>
+                        <div class="bg-white p-6 rounded-lg shadow-lg cursor-pointer timeline-item-header card-hover-effect">
+                            <p class="text-sm text-gray-500">${job.dates}</p>
+                            <h3 class="text-xl font-bold text-[#4A5568] mt-1">${job.title}</h3>
+                            <p class="text-md text-gray-600">${job.company}</p>
+                            <div class="timeline-item-content">
+                                <ul class="space-y-2 mt-4 text-gray-600 list-disc list-inside">
+                                    ${job.details.map(d => `<li>${d}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                timelineContainer.innerHTML += itemHTML;
+            });
+
+            document.querySelectorAll('.timeline-item-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    header.querySelector('.timeline-item-content').classList.toggle('open');
+                });
+            });
+
+
+            const skillsChartCtx = document.getElementById('skillsChart').getContext('2d');
+            new Chart(skillsChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Canva', 'MS Office', 'Data Analysis', 'Curriculum Dev.'],
+                    datasets: [{
+                        label: 'Proficiency',
+                        data: [90, 95, 75, 85],
+                        backgroundColor: [
+                            'rgba(74, 85, 104, 0.6)',
+                            'rgba(113, 128, 150, 0.6)',
+                            'rgba(160, 174, 192, 0.6)',
+                            'rgba(226, 232, 240, 0.6)'
+                        ],
+                        borderColor: [
+                            '#4A5568',
+                            '#718096',
+                            '#A0AEC0',
+                            '#E2E8F0'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) { return value + "%" }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const competencies = [
+                'Strategic Communication', 'Project Management', 'Stakeholder Engagement',
+                'Problem-Solving', 'Adaptability', 'Training & Development',
+                'Performance Assessment', 'Relationship Building', 'Eager to Learn', 'Highly Teachable'
+            ];
+            const competenciesContainer = document.getElementById('competencies-container');
+            competencies.forEach(comp => {
+                const compHTML = `<div class="bg-gray-100 p-3 rounded-lg shadow-sm text-sm font-medium text-gray-700 card-hover-effect">${comp}</div>`;
+                competenciesContainer.innerHTML += compHTML;
+            });
+
+            const educationData = [
+                { title: 'MASTERS IN TEACHING ENGLISH (CAR)', school: 'FATHER SATURNINO URIOS UNIVERSITY', dates: '2021 – 2024' },
+                { title: 'BSED-MAJOR IN ENGLISH', school: 'PHILIPPINE NORMAL UNIVERSITY', dates: '2015' },
+                { title: 'LICENSURE EXAM FOR TEACHERS', school: 'Professional Regulation Commission', dates: 'Rating: 80.80' }
+            ];
+            const educationContainer = document.getElementById('education-container');
+            educationData.forEach(edu => {
+                const eduHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-lg text-center transform hover:scale-105 transition-transform card-hover-effect">
+                        <h3 class="text-lg font-bold text-[#4A5568]">${edu.title}</h3>
+                        <p class="text-gray-600 mt-2">${edu.school}</p>
+                        <p class="text-sm text-gray-500 mt-1">${edu.dates}</p>
+                    </div>`;
+                educationContainer.innerHTML += eduHTML;
+            });
+
+            const trainingData = [
+                 { title: 'Capacity Building of Trainer on Upskilling English Teachers', sponsor: 'DEPARTMENT OF EDUCATION-CARAGA REGION', hours: '32 HRS' },
+                 { title: 'Two-Day District Orientation on Assessment and Grading', sponsor: 'DEPARTMENT OF EDUCATION-BUTUAN CITY', hours: '16 HRS' },
+                 { title: 'Six-Day Teacher Induction Program (TIP)', sponsor: 'DEPARTMENT OF EDUCATION-BUTUAN CITY', hours: '48 HRS' },
+                 { title: 'Division Retooling-Workshop on Teaching Beginning Reading', sponsor: 'DEPARTMENT OF EDUCATION-BUTUAN CITY', hours: '5 HRS' },
+                 { title: 'One-Day Phil-IRI Orientation', sponsor: 'DEPARTMENT OF EDUCATION-BUTUAN CITY', hours: '8 HRS' },
+                 { title: 'Regional Training of Teachers (RTOT) on Critical Contents', sponsor: 'DEPARTMENT OF EDUCATION-CARAGA REGION', hours: '80 HRS' }
+            ];
+            const trainingContainer = document.getElementById('training-container');
+            trainingData.forEach(train => {
+                const trainHTML = `
+                    <div class="bg-white p-4 rounded-lg shadow-md flex justify-between items-center card-hover-effect">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">${train.title}</h3>
+                            <p class="text-sm text-gray-500">${train.sponsor}</p>
+                        </div>
+                        <span class="text-sm font-bold text-white bg-[#A0AEC0] py-1 px-3 rounded-full">${train.hours}</span>
+                    </div>`;
+                trainingContainer.innerHTML += trainHTML;
+            });
+
+            // Intersection Observer for fade-in effect
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('section-hidden');
+                        entry.target.classList.add('section-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('section.section-hidden').forEach(section => {
+                observer.observe(section);
+            });
+
+
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            window.onscroll = () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 60) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            };
+        });
+    </script>
+
+</body>
+</html>
+
